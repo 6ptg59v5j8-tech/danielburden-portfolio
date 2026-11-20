@@ -110,4 +110,16 @@ async function handle(req,env,ctx){
   }
   return fail('Not found.',404);
 }
-export async function onRequest(context){try{return await handle(context.request,context.env,context);}catch(e){return json({error:e?.message==='Unexpected end of JSON input'?'Invalid request body.':'The request could not be completed. Please check your input and configuration.'},500);}}
+export async function onRequest(context) {
+  try {
+    return await handle(context.request, context.env, context);
+  } catch (e) {
+    console.error('API ERROR:', e?.stack || e?.message || e);
+
+    return json({
+      error: e?.message === 'Unexpected end of JSON input'
+        ? 'Invalid request body.'
+        : 'Server error. Check Cloudflare logs.'
+    }, 500);
+  }
+}
